@@ -1,0 +1,29 @@
+{ "name": "win11-wsl2-ubuntu-base-pmb",
+  "version": "0.0.0",
+  "description": "Make Ubuntu work for me in Windows 11 WSL2.",
+  "keywords": [],
+
+  "author": "M.K. (https://github.com/mk-pmb)",
+  "homepage": "https://github.com/mk-pmb/win11-wsl2-ubuntu-base-pmb/#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mk-pmb/win11-wsl2-ubuntu-base-pmb.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mk-pmb/win11-wsl2-ubuntu-base-pmb/issues"
+  },
+  "contributors": [],
+
+  "private": true, "license": "ISC",
+
+  "dependencies": {},
+  "devDependencies": {
+  },
+
+
+  "engines": {
+    "dotnet": ">=5.0.0",
+    "powershell": ">=7.0.0",
+    "wsl": ">=2.0.0"
+  }
+}
