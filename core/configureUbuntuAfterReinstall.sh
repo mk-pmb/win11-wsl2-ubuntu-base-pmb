@@ -1,0 +1,127 @@
+#!/bin/bash
+# -*- coding: utf-8, tab-width: 2 -*-
+
+
+function rere_cli_init () {
+  export LANG{,UAGE}=en_US.UTF-8  # make error messages search engine-friendly
+  local REPO_DIR="$(readlink -m -- "$BASH_SOURCE"/../..)"
+  cd -- "$REPO_DIR" || return $?
+  rere_"$@" || return $?
+}
+
+
+function rere_post_unpack () {
+  [[ "$HOSTNAME" == [a-z]* ]] || return 4$(
+    echo E: "Flinching: Hostname doesn't start with lowercase letter!" >&2)
+  [ "${HOSTNAME/[A-Z]/}" == "$HOSTNAME" ] || return 4$(
+    echo E: "Flinching: Hostname contains uppercase letter!" >&2)
+
+  local VAL=
+  VAL="$(cmd.exe /c echo %WINDIR% 2>&1)"
+  VAL="${VAL%$'\r'}"
+  case "${VAL,,}" in
+    [a-z]:'\'* ) ;;
+    *': exec format error' )
+      echo E: "Cannot detect %WINDIR%:${VAL##*:}" \
+        '=> WSL bug (https://github.com/microsoft/WSL/issues/13885).' \
+        'As a work-around, please run `wsl.exe --shutdown` and retry.' >&2
+      return 4;;
+    * )
+      echo E: "Cannot detect %WINDIR%: Unknown error: $VAL" >&2
+      return 4;;
+  esac
+
+  rere_sudo_nopw || return $?
+  ln --symbolic --force --no-target-directory \
+    -- "$REPO_DIR"/wub.sh /usr/local/bin/wub || return $?
+
+  local WINPATH_WINDIR="$VAL"
+  local WINPATH_REPO="$(wslpath -aw .)"
+  local WINPATH_PROFILE="$(cmd.exe /c echo %USERPROFILE% | tr -d '\r')"
+  local MNTPATH_PROFILE="$(wslpath -u "$WINPATH_PROFILE")"
+  VAL= local -p; echo
+
+  echo D: "Install the wub.cmd command:"
+  local WINAPPS="$MNTPATH_PROFILE/AppData/Local/Microsoft/WindowsApps"
+  # Win 10: %USERPROFILE%\AppData\Local\Microsoft\WindowsApps is in PATH
+  ( echo '@echo off'
+    echo '"'"$WINPATH_REPO"'\wub.cmd" %*'
+    echo 'exit /b %ERRORLEVEL%'
+  ) >"$WINAPPS/wub.cmd" || return $?
+
+  rere_ensure_apt_pkg || return $?
+  rere_ensure_ncat || return $?
+
+  # debian_chroot='reinstalled' bash -i
+}
+
+
+function rere_sudo_nopw () {
+  local NOPW='/etc/sudoers.d/nopw-groups'
+  echo -n D: "Ensure $NOPW: "
+  [ -f "$NOPW" ] || wsl.exe --user root sh \
+    -c 'echo "%sudo   ALL=(ALL:ALL) NOPASSWD: ALL"'" >>$NOPW"
+  echo done.
+}
+
+
+function rere_ensure_apt_pkg () {
+  echo -n D: 'Check basic apt packages to install: '
+  local LIST=(
+    aptitude
+    nano
+    openssh-server
+    pv
+    screen
+    unzip
+    zip
+    )
+  local ITEM= TODO= APT="env debian_frontend='noninteractive' apt"
+  for ITEM in "${LIST[@]}"; do
+    [ -f "/usr/share/doc/$ITEM/copyright" ] ||
+      TODO+=" ${ITEM%%:*}"
+  done
+  if [ -z "$TODO" ]; then
+    echo 'None missing.'
+  else
+    echo 'Some packages are missing.'
+    echo 'D: Update apt package lists:'
+    $APT update || return $?
+    echo 'D: Install missing apt packages:'
+    $APT install --assume-yes -- $TODO || return $?
+    echo 'D: Packages have been installed.'
+  fi
+}
+
+
+function rere_ensure_ncat () {
+  echo -n D: 'Checking ncat.exe: '
+  which ncat.exe 2>/dev/null | grep -m 1 -Pe '^/' && return 0
+  echo 'missing. Gonna download.'
+  local URL='https://nmap.org/dist/ncat-portable-5.59BETA1.zip'
+  URL="https://web.archive.org/web/20251203182724/$URL"
+  local TMPF='.git/tmp.cache/web/'
+  mkdir --parents -- "$TMPF"
+  TMPF+="ncat.zip.part"
+  echo 'Windows Defender leave me alone please!' >"$TMPF" || return $?
+  curl --silent --location -- "$URL" >>"$TMPF" || return $?
+  tail --lines=+2 -- "$TMPF" | sha512sum --check -- <(
+    echo '5ea2e754a9434a1e685a6e5b9bfea1b916d8429a1a189091a951e3dfcdd0bc81'$(
+      )'96f970ed11e68a375b7ab59c5452ed6c6e47296c5b7f73649f705eca6b8558b3'$(
+      )' */dev/stdin'
+    ) || return $?$(echo E: 'Flinching: Corrupted download!' >&2)
+  unzip -p -- "$TMPF" 'ncat-*/ncat.exe' | LANG=C sed -zre \
+    's~(This program cannot be run in DOS mode)\.~\1!~' \
+    >"$WINAPPS/ncat.exe" || return $?
+}
+
+
+
+
+
+
+
+
+
+
+rere_cli_init "$@"; exit $?
