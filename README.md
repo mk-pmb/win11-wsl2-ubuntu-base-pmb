@@ -10,6 +10,43 @@ Make Ubuntu work for me in Windows 11 WSL2.
 
 
 
+Installation
+------------
+
+* Ensure your windows computer name is sane, and entirely lowercase.
+* Install [ncat](https://nmap.org/ncat/) if you haven't already:
+  Make sure you have `ncat.exe` in your [`PATH`][wp-en-path-var].
+  The download link for the statically compiled version of `ncat.exe` is
+  hidden near the botton: "[…] inside a zip file [here][ncat-zip]."
+  * I actually made a downloader in the install script,
+    and even managed to trick Windows Defender to leave the ZIP file alone,
+    but it would still confiscate the unpacked exe file, so you'll have to
+    deal with it manually.
+* Check `netsh.exe interface portproxy show all` for any forwardings for which
+  you don't have a good reason to keep them. For help on how to delete them:
+  `netsh.exe interface portproxy delete` (shows available subcommands)
+* Install the latest Ubuntu LTS from the Windows Store.
+  * Recommended initial username: `wubu-pmb`
+  * Recommended initial password (will be disabled later): `wubu`
+* Create a directory for this repo somewhere on a windows disk where each
+  path component consists of only letters (`A-Z`, `a-z`), digits (`0-9`),
+  U+002D hyphen-minus (`-`), U+002E full stop (`.`),
+  and/or U+005F low line (`_`).
+  * We'll call this your _local repo dir_.
+  * Recommended path: `C:\ProgramData\win11-wsl2-ubuntu-base-pmb`
+* In your local repo dir, make a directory named `cfg.@.defaults`
+  and maybe put some files there:
+  * `ssh_authorized_keys.txt`: If you want to login via OpenSSH.
+    * A potential UTF-8-BOM (Byte Order Mark) in the first line is acceptable.
+    * U+000D carriage return (cr) at the end of lines are acceptable.
+* Download [`reinstall_repo.cmd`](reinstall_repo.cmd) into your local repo dir,
+  open its file properties, confirm the trust checkbox (web download
+  noob protection) in the bottom, click "OK", and run it.
+
+  [wp-en-path-var]: https://en.wikipedia.org/wiki/PATH_%28variable%29
+  [ncat-zip]: https://web.archive.org/web/20251203182724/https://nmap.org/dist/ncat-portable-5.59BETA1.zip
+
+
 
 Known issues
 ------------
