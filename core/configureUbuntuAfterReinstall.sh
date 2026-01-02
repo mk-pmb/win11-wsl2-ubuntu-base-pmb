@@ -51,6 +51,7 @@ function rere_post_unpack () {
 
   rere_ensure_apt_pkg || return $?
   rere_ensure_ncat || return $?
+  rere_add_default_ssh_authorized_keys || return $?
 
   # debian_chroot='reinstalled' bash -i
 }
@@ -114,6 +115,23 @@ function rere_ensure_ncat () {
     's~(This program cannot be run in DOS mode)\.~\1!~' \
     >"$WINAPPS/ncat.exe" || return $?
 }
+
+
+function rere_add_default_ssh_authorized_keys () {
+  echo D: 'Ensuring default SSH keys:'
+  local CFG_AK="$HOME"/.config/ssh
+  mkdir --parents -- "$CFG_AK"
+  [ -L "$HOME"/.ssh ] || ln --symbolic --no-target-directory \
+    -- .config/ssh "$HOME"/.ssh
+  CFG_AK+='/authorized_keys'
+  >>"$CFG_AK"
+  LANG=C sed -re 's~^\xEF\xBB\xBF~~;s~\r~~' \
+    -- cfg.@.defaults/ssh_authorized_keys.txt 2>/dev/null |
+    grep -vFf "$CFG_AK" >>"$CFG_AK"
+}
+
+
+
 
 
 
