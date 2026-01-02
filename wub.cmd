@@ -54,7 +54,7 @@ goto end
   if not exist %1 goto end
   set impl=%1
   if "%~x1"==".ps1" set impl=powershell.exe -NoLogo -ExecutionPolicy Bypass -File %impl%
-  if "%~x1"==".sh" set impl=bash.exe %impl%
+  if "%~x1"==".sh" set impl=wsl.exe wub %impl%
 goto end
 
 

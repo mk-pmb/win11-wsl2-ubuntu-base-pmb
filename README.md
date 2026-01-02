@@ -13,6 +13,7 @@ Make Ubuntu work for me in Windows 11 WSL2.
 Installation
 ------------
 
+* Plan ahead for restarting Windows soon, as that will be required later.
 * Ensure your windows computer name is sane, and entirely lowercase.
 * Install [ncat](https://nmap.org/ncat/) if you haven't already:
   Make sure you have `ncat.exe` in your [`PATH`][wp-en-path-var].
@@ -42,6 +43,11 @@ Installation
 * Download [`reinstall_repo.cmd`](reinstall_repo.cmd) into your local repo dir,
   open its file properties, confirm the trust checkbox (web download
   noob protection) in the bottom, click "OK", and run it.
+* It should install lots of stuff and then say
+  "Post-install configuration completed successfully."
+* Type any key (e.g. space bar) to quit.
+* Restart Windows.
+
 
   [wp-en-path-var]: https://en.wikipedia.org/wiki/PATH_%28variable%29
   [ncat-zip]: https://web.archive.org/web/20251203182724/https://nmap.org/dist/ncat-portable-5.59BETA1.zip
