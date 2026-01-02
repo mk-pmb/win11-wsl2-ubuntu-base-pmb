@@ -53,6 +53,11 @@ function rere_post_unpack () {
     echo 'exit /b %ERRORLEVEL%'
   ) >"$WINAPPS/wub.cmd" || return $?
 
+  echo D: "Prevent syslog spam from the wsl-pro-service daemon:"
+  # https://github.com/microsoft/WSL/issues/12992
+  sudo systemctl disable wsl-pro.service
+  sudo systemctl stop wsl-pro.service
+
   rere_ensure_apt_pkg || return $?
   rere_ensure_ncat || return $?
   rere_add_default_ssh_authorized_keys || return $?
@@ -96,6 +101,24 @@ function rere_ensure_apt_pkg () {
     echo 'D: Install missing apt packages:'
     $ITEM install --assume-yes -- $TODO || return $?
     echo 'D: Packages have been installed.'
+  fi
+
+  echo -n D: 'Check basic apt packages to remove: '
+  LIST=(
+    # nope, would uninstall sudo. -> # ubuntu-pro-client ubuntu-pro-client-l10n
+    )
+  TODO=
+  for ITEM in "${LIST[@]}"; do
+    [ -f "/usr/share/doc/$ITEM/copyright" ] || continue
+    TODO+=" $ITEM"
+  done
+  if [ -z "$TODO" ]; then
+    echo 'Found none.'
+  else
+    echo 'Found some.'
+    sudo -E env debian_frontend='noninteractive' \
+      aptitude purge --assume-yes -- $TODO || return $?
+    echo 'D: Packages have been purged.'
   fi
 }
 
