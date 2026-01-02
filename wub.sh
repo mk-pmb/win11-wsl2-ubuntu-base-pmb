@@ -8,6 +8,7 @@ function wub_cli_init () {
   case "$1" in
     '' ) set -- pwsh "${@:2}"; cd -- "$REPO_DIR" || return $?;;
     --show-basedir ) echo "$REPO_DIR"; return 0;;
+    [A-Za-z]:'\'*.* ) set -- "$(wslpath -au -- "$1")" "${@:2}";;
     *.exe ) ;;
     * ) set -- $(wub_find_impl "$1") "${@:2}";;
   esac
