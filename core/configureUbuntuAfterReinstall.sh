@@ -49,6 +49,12 @@ function rere_post_unpack () {
     echo 'exit /b %ERRORLEVEL%'
   ) >"$WINAPPS/wub.cmd" || return $?
 
+  echo D: "Install the keep-alive autorun shortcut:"
+  wub filesys/lnkFile prog 'wub.cmd' \
+    args 'core/runHide bash.exe wub core/keepWslAlive on_startup' \
+    lnkFile '@:\Startup\Start WSL2 Ubuntu.lnk' icon 'pifmgr.dll,32' \
+    winStyle min saveLnk || return $?
+
   echo D: "Prevent syslog spam from the wsl-pro-service daemon:"
   # https://github.com/microsoft/WSL/issues/12992
   systemctl disable wsl-pro.service
@@ -58,6 +64,8 @@ function rere_post_unpack () {
   rere_ensure_ncat || return $?
   rere_add_default_ssh_authorized_keys || return $?
 
+  echo
+  echo D: 'Post-install configuration completed successfully.'
   # debian_chroot='reinstalled' bash -i
 }
 
@@ -144,12 +152,14 @@ function rere_add_default_ssh_authorized_keys () {
   local CFG_AK="$HOME"/.config/ssh
   mkdir --parents -- "$CFG_AK"
   [ -L "$HOME"/.ssh ] || ln --symbolic --no-target-directory \
-    -- .config/ssh "$HOME"/.ssh
+    -- .config/ssh "$HOME"/.ssh || return $?$(
+    echo E: 'Failed to create ~/.ssh symlink!' >&2)
   CFG_AK+='/authorized_keys'
-  >>"$CFG_AK"
-  LANG=C sed -re 's~^\xEF\xBB\xBF~~;s~\r~~' \
-    -- cfg.@.defaults/ssh_authorized_keys.txt 2>/dev/null |
-    grep -vFf "$CFG_AK" >>"$CFG_AK"
+  >>"$CFG_AK" || return $?$(echo E: 'Failed to touch $CFG_AK!' >&2)
+  ( LANG=C sed -re 's~^\xEF\xBB\xBF~~;s~\r~~' -- \
+    cfg.@.defaults/ssh_authorized_keys.txt \
+    2>/dev/null | grep -vFf "$CFG_AK" || true
+  ) >>"$CFG_AK" || return $?$(echo E: 'Failed to update $CFG_AK!' >&2)
 }
 
 
