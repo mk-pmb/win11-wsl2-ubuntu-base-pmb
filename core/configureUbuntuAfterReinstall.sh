@@ -87,10 +87,12 @@ function rere_ensure_apt_pkg () {
   echo -n D: 'Check basic apt packages to install: '
   local LIST=(
     aptitude
+    fuse3 # would otherwise be uninstalled when purging snapd.
     nano
     openssh-server
     pv
     screen
+    squashfs-tools # would otherwise be uninstalled when purging snapd.
     unzip
     zip
     )
@@ -113,6 +115,7 @@ function rere_ensure_apt_pkg () {
 
   echo -n D: 'Check basic apt packages to remove: '
   LIST=(
+    snapd
     # nope, would uninstall sudo. -> # ubuntu-pro-client ubuntu-pro-client-l10n
     )
   TODO=
