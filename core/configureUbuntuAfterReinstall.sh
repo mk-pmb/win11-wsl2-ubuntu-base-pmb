@@ -35,6 +35,13 @@ function rere_post_unpack () {
   ln --symbolic --force --no-target-directory \
     -- "$REPO_DIR"/wub.sh /usr/local/bin/wub || return $?
 
+  echo D: "Prevent syslog spam from the wsl-pro-service daemon:"
+  # https://github.com/microsoft/WSL/issues/12992
+  systemctl disable wsl-pro.service || return $?
+  systemctl stop wsl-pro.service || return $?
+
+  rere_ensure_apt_pkg || return $?
+
   local WINPATH_WINDIR="$VAL"
   local WINPATH_REPO="$(wslpath -aw .)"
   local WINPATH_PROFILE="$(cmd.exe /c echo %USERPROFILE% | tr -d '\r')"
@@ -49,12 +56,6 @@ function rere_post_unpack () {
     echo 'exit /b %ERRORLEVEL%'
   ) >"$WINAPPS/wub.cmd" || return $?
 
-  echo D: "Prevent syslog spam from the wsl-pro-service daemon:"
-  # https://github.com/microsoft/WSL/issues/12992
-  systemctl disable wsl-pro.service
-  systemctl stop wsl-pro.service
-
-  rere_ensure_apt_pkg || return $?
   rere_add_default_ssh_authorized_keys || return $?
   rere_ensure_ncat || return $?
   rere_ensure_keepalive || return $?
