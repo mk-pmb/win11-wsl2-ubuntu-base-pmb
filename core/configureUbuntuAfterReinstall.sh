@@ -4,7 +4,9 @@
 
 function rere_cli_init () {
   export LANG{,UAGE}=en_US.UTF-8  # make error messages search engine-friendly
-  local REPO_DIR="$(readlink -m -- "$BASH_SOURCE"/../..)"
+  local RERE_SELF="$(readlink -m -- "$BASH_SOURCE")"
+  local REPO_DIR="${RERE_SELF%/*/*}"
+  RERE_SELF="${RERE_SELF:${#REPO_DIR}+1}"
   cd -- "$REPO_DIR" || return $?
   rere_"$@" || return $?
 }
@@ -16,8 +18,22 @@ function rere_post_unpack () {
   [ "${HOSTNAME/[A-Z]/}" == "$HOSTNAME" ] || return 4$(
     echo E: "Flinching: Hostname contains uppercase letter!" >&2)
 
-  local VAL=
-  VAL="$(cmd.exe /c echo %WINDIR% 2>&1)"
+  rere_unpack_as_root || return $?
+  local WINPATH_WINDIR=
+  rere_detect_windir || return $?
+
+  # Earlier versions had used `wsl.exe` only for `whoami`, to detect the
+  # default username and then `sudo` to it. However, with `sudo` we'd lose
+  # the capability for running `.exe` files, so instead, we'll have to run
+  # the entire user stage in another instance of `wsl.exe`.
+  wsl.exe ./"$RERE_SELF" unpack_as_user \
+    WINPATH_WINDIR="$WINPATH_WINDIR" \
+    || return $?
+}
+
+
+function rere_detect_windir () {
+  local VAL="$(cmd.exe /c echo %WINDIR% 2>&1)"
   VAL="${VAL%$'\r'}"
   case "${VAL,,}" in
     [a-z]:'\'* ) ;;
@@ -30,7 +46,11 @@ function rere_post_unpack () {
       echo E: "Cannot detect %WINDIR%: Unknown error: $VAL" >&2
       return 4;;
   esac
+  WINPATH_WINDIR="$VAL"
+}
 
+
+function rere_unpack_as_root () {
   rere_sudo_nopw || return $?
   ln --symbolic --force --no-target-directory \
     -- "$REPO_DIR"/wub.sh /usr/local/bin/wub || return $?
@@ -41,12 +61,17 @@ function rere_post_unpack () {
   systemctl stop wsl-pro.service || return $?
 
   rere_ensure_apt_pkg || return $?
+}
 
-  local WINPATH_WINDIR="$VAL"
+
+function rere_unpack_as_user () {
+  local "$@"
   local WINPATH_REPO="$(wslpath -aw .)"
+  [ -n "${WINPATH_REPO%.}" ] || return 4$(
+    echo E: 'Cannot detect WINPATH_REPO' >&2)
   local WINPATH_PROFILE="$(cmd.exe /c echo %USERPROFILE% | tr -d '\r')"
   local MNTPATH_PROFILE="$(wslpath -u "$WINPATH_PROFILE")"
-  VAL= local -p; echo
+  local -p; echo
 
   echo D: "Install the wub.cmd command:"
   local WINAPPS="$MNTPATH_PROFILE/AppData/Local/Microsoft/WindowsApps"
