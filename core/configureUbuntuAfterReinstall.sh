@@ -49,12 +49,6 @@ function rere_post_unpack () {
     echo 'exit /b %ERRORLEVEL%'
   ) >"$WINAPPS/wub.cmd" || return $?
 
-  echo D: "Install the keep-alive autorun shortcut:"
-  wub filesys/lnkFile prog 'wub.cmd' \
-    args 'core/runHide bash.exe wub core/keepWslAlive on_startup' \
-    lnkFile '@:\Startup\Start WSL2 Ubuntu.lnk' icon 'pifmgr.dll,32' \
-    winStyle min saveLnk || return $?
-
   echo D: "Prevent syslog spam from the wsl-pro-service daemon:"
   # https://github.com/microsoft/WSL/issues/12992
   systemctl disable wsl-pro.service
@@ -63,6 +57,7 @@ function rere_post_unpack () {
   rere_ensure_apt_pkg || return $?
   rere_add_default_ssh_authorized_keys || return $?
   rere_ensure_ncat || return $?
+  rere_ensure_keepalive || return $?
 
   echo
   echo D: 'Post-install configuration completed successfully.'
@@ -163,6 +158,16 @@ function rere_add_default_ssh_authorized_keys () {
     cfg.@.defaults/ssh_authorized_keys.txt \
     2>/dev/null | grep -vFf "$CFG_AK" || true
   ) >>"$CFG_AK" || return $?$(echo E: 'Failed to update $CFG_AK!' >&2)
+}
+
+
+function rere_ensure_keepalive () {
+  echo D: "Install the keep-alive autorun shortcut:"
+  local PROG='wub.cmd'
+  local ARGS='core/runHide bash.exe wub core/keepWslAlive on_startup'
+  wub filesys/lnkFile prog "$PROG" args "$ARGS" \
+    lnkFile '@:\Startup\Start WSL2 Ubuntu.lnk' icon 'pifmgr.dll,32' \
+    winStyle min saveLnk || return $?
 }
 
 
