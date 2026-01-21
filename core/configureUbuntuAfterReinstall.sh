@@ -168,6 +168,7 @@ function rere_ensure_keepalive () {
   wub filesys/lnkFile prog "$PROG" args "$ARGS" \
     lnkFile '@:\Startup\Start WSL2 Ubuntu.lnk' icon 'pifmgr.dll,32' \
     winStyle min saveLnk || return $?
+  "$PROG" $ARGS || return $?
 }
 
 
