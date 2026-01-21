@@ -61,8 +61,8 @@ function rere_post_unpack () {
   systemctl stop wsl-pro.service
 
   rere_ensure_apt_pkg || return $?
-  rere_ensure_ncat || return $?
   rere_add_default_ssh_authorized_keys || return $?
+  rere_ensure_ncat || return $?
 
   echo
   echo D: 'Post-install configuration completed successfully.'
