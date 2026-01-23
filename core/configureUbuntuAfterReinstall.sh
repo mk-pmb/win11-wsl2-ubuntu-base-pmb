@@ -57,6 +57,9 @@ function rere_unpack_as_root () {
 
   ln --symbolic --force --no-target-directory \
     -- "$REPO_DIR"/wub.sh /usr/local/bin/wub || return $?
+  ln --symbolic --force --no-target-directory \
+    -- "$REPO_DIR"/core/wubCmdReexecInCmdExe.sh \
+    /usr/local/bin/wub.cmd || return $?
 
   echo D: "Prevent syslog spam from the wsl-pro-service daemon:"
   # https://github.com/microsoft/WSL/issues/12992

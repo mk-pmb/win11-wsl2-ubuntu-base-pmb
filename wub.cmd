@@ -1,4 +1,5 @@
 @echo off
+: ; echo E: "You are trying to run $0 in a linux shell ($SHELL)!"; exit 11
 :: -*- coding: latin-1, tab-width: 2 -*-
 
 : init
