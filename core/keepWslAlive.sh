@@ -19,6 +19,13 @@ function kwa_on_startup () {
   local KA_NAME='keep-wsl2-ubuntu-alive'
   local KA_DURA='9009009d'
   # ^-- Probably sufficient beyond host Windows' End-of-Life.
+
+  # If other sleep processes are already running, their environment may be
+  # outdated, and may confuse anyone who spies on their environment in order
+  # to determine WSL host interface state.
+  local OUTDATED_SLEEPERS="$(ps ho args,pid -C sleep |
+    grep -Pe '^keep-wsl2-ubuntu-alive ' | grep -oPe '\d+$')"
+  [ -z "$OUTDATED_SLEEPERS" ] || kill -HUP $OUTDATED_SLEEPERS
   exec -a "$KA_NAME" sleep "$KA_DURA"
 }
 
