@@ -54,15 +54,19 @@ function rere_detect_windir () {
 
 
 function rere_unpack_as_user () {
-  local "$@"
+  [ "$#" == 0 ] || local "$@"
   local WINPATH_REPO="$(wslpath -aw .)"
   [ -n "${WINPATH_REPO%.}" ] || return 4$(
     echo E: 'Cannot detect WINPATH_REPO' >&2)
   local WINPATH_PROFILE="$(cmd.exe /c echo %USERPROFILE% | tr -d '\r')"
   local MNTPATH_PROFILE="$(wslpath -u "$WINPATH_PROFILE")"
-  local -p; echo
 
-  echo
+  # Display and export all local variables.
+  local VARS="$(local -p | sed -nre 's~^declare -\S* ([A-Z0-9_]+=)~\1~p' |
+    sort --version-sort)"
+  echo D: "${VARS//$'\n'/; }"
+  export $(echo "$VARS" | cut -d = -sf 1)
+
   ./core/runParts.sh core/unpack.user 'Unpack user parts' || return $?
 
   echo
