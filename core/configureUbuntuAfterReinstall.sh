@@ -73,8 +73,6 @@ function rere_unpack_as_user () {
   rere_add_default_ssh_authorized_keys || return $?
   echo
   ./core/runParts.sh core/unpack.user 'Unpack user parts' || return $?
-  echo
-  rere_ensure_keepalive || return $?
 
   echo
   echo D: 'Post-install configuration completed successfully.'
@@ -95,17 +93,6 @@ function rere_add_default_ssh_authorized_keys () {
     cfg.@.defaults/ssh_authorized_keys.txt \
     2>/dev/null | grep -vFf "$CFG_AK" || true
   ) >>"$CFG_AK" || return $?$(echo E: 'Failed to update $CFG_AK!' >&2)
-}
-
-
-function rere_ensure_keepalive () {
-  echo D: "Install the keep-alive autorun shortcut:"
-  local PROG='wub.cmd'
-  local ARGS='core/runHide bash.exe wub core/keepWslAlive on_startup'
-  wub filesys/lnkFile prog "$PROG" args "$ARGS" \
-    lnkFile '@:\Startup\Start WSL2 Ubuntu.lnk' icon 'pifmgr.dll,32' \
-    winStyle min saveLnk || return $?
-  "$PROG" $ARGS || return $?
 }
 
 
