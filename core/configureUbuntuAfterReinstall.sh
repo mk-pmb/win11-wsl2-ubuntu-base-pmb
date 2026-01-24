@@ -5,10 +5,11 @@
 function rere_cli_init () {
   export LANG{,UAGE}=en_US.UTF-8  # make error messages search engine-friendly
   local RERE_SELF="$(readlink -m -- "$BASH_SOURCE")"
-  local REPO_DIR="${RERE_SELF%/*/*}"
-  RERE_SELF="${RERE_SELF:${#REPO_DIR}+1}"
+  local WUB_REPO_DIR="${RERE_SELF%/*/*}"
+  RERE_SELF="${RERE_SELF:${#WUB_REPO_DIR}+1}"
   [ -n "$USER" ] || local USER="$(whoami)"
-  cd -- "$REPO_DIR" || return $?
+  cd -- "$WUB_REPO_DIR" || return $?
+  export WUB_REPO_DIR
   rere_"$@" || return $?
 }
 
@@ -54,12 +55,6 @@ function rere_detect_windir () {
 
 function rere_unpack_as_root () {
   ./core/runParts.sh core/unpack.root 'Unpack root parts' || return $?
-
-  ln --symbolic --force --no-target-directory \
-    -- "$REPO_DIR"/wub.sh /usr/local/bin/wub || return $?
-  ln --symbolic --force --no-target-directory \
-    -- "$REPO_DIR"/core/wubCmdReexecInCmdExe.sh \
-    /usr/local/bin/wub.cmd || return $?
 
   echo D: "Prevent syslog spam from the wsl-pro-service daemon:"
   # https://github.com/microsoft/WSL/issues/12992
