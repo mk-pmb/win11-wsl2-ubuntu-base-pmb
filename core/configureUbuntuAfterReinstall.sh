@@ -22,6 +22,8 @@ function rere_post_unpack () {
 
   echo
   ./core/runParts.sh core/unpack.root 'Unpack root parts' || return $?
+  echo
+
   local WINPATH_WINDIR=
   rere_detect_windir || return $?
 
@@ -54,6 +56,8 @@ function rere_detect_windir () {
 
 
 function rere_unpack_as_user () {
+  local RP_TITLE='Unpack user parts'
+  ./core/runParts.sh --headline "$RP_TITLE" 'Detected paths:'
   [ "$#" == 0 ] || local "$@"
   local WINPATH_REPO="$(wslpath -aw .)"
   [ -n "${WINPATH_REPO%.}" ] || return 4$(
@@ -67,7 +71,7 @@ function rere_unpack_as_user () {
   echo D: "${VARS//$'\n'/; }"
   export $(echo "$VARS" | cut -d = -sf 1)
 
-  ./core/runParts.sh core/unpack.user 'Unpack user parts' || return $?
+  ./core/runParts.sh core/unpack.user "$RP_TITLE" || return $?
 
   echo
   echo D: 'Post-install configuration completed successfully.'
