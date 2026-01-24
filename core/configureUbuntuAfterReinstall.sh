@@ -55,8 +55,6 @@ function rere_detect_windir () {
 
 function rere_unpack_as_root () {
   ./core/runParts.sh core/unpack.root 'Unpack root parts' || return $?
-
-  rere_set_default_locale || return $?
 }
 
 
@@ -136,19 +134,6 @@ function rere_ensure_keepalive () {
     lnkFile '@:\Startup\Start WSL2 Ubuntu.lnk' icon 'pifmgr.dll,32' \
     winStyle min saveLnk || return $?
   "$PROG" $ARGS || return $?
-}
-
-
-function rere_set_default_locale () {
-  local WIN_LANG="$(powershell.exe Get-WinUserLanguageList |
-    sed -nre 's~\r$~~; s!-!_!; s~^LanguageTag\s+:\s+~~p')"
-  WIN_LANG="${WIN_LANG%%$'\n'*}"
-  case "$WIN_LANG" in
-    [a-z][a-z]_[A-Z][A-Z]* ) ;;
-    * ) WIN_LANG='en_US';;
-  esac
-  printf -- '%s="%s.UTF-8"\n' LANG en_US LC_TIME "$WIN_LANG" \
-    >/etc/default/locale || return $?
 }
 
 
