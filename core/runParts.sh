@@ -6,6 +6,13 @@ function runparts () {
   export LANG{,UAGE}=en_US.UTF-8  # make error messages search engine-friendly
   local PARTS_DIR="$1"; shift
   local GROUP_TITLE="$1"; shift
+  case "$GROUP_TITLE" in
+    *$'\n'* ) ;;
+    * ) GROUP_TITLE=$'==== '"$GROUP_TITLE"$': \n ====';;
+  esac
+  case "$PARTS_DIR" in
+    --headline | -H ) echo "${GROUP_TITLE//$'\n'/"$*"}"; return $?;;
+  esac
   PARTS_DIR="${PARTS_DIR%/}"
   case "$PARTS_DIR" in
     . ) ;;
@@ -19,12 +26,11 @@ function runparts () {
     [ -x "$PART" ] || continue
     TITLE="$(basename -- "$PART")"
     TITLE="${TITLE%.sh}"
-    echo "==== $GROUP_TITLE: $TITLE ===="
+    echo "${GROUP_TITLE//$'\n'/"$TITLE"}"
     "$PART" || return $?$(echo E: "runparts part failed (rv=$?): $PART" >&2)
     echo
   done
-
-  echo "==== $GROUP_TITLE: Done. ===="
+  echo "${GROUP_TITLE//$'\n'/Done.}"
 }
 
 
