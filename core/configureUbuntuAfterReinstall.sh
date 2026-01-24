@@ -19,6 +19,7 @@ function rere_post_unpack () {
   [ "${HOSTNAME/[A-Z]/}" == "$HOSTNAME" ] || return 4$(
     echo E: "Flinching: Hostname contains uppercase letter!" >&2)
 
+  echo
   rere_unpack_as_root || return $?
   local WINPATH_WINDIR=
   rere_detect_windir || return $?
@@ -52,7 +53,7 @@ function rere_detect_windir () {
 
 
 function rere_unpack_as_root () {
-  rere_sudo_nopw || return $?
+  ./core/runParts.sh core/unpack.root 'Unpack root parts' || return $?
   rere_disable_password_for_user root || return $?
 
   ln --symbolic --force --no-target-directory \
@@ -105,15 +106,6 @@ function rere_unpack_as_user () {
   echo
   echo D: 'Post-install configuration completed successfully.'
   # debian_chroot='reinstalled' bash -i
-}
-
-
-function rere_sudo_nopw () {
-  local NOPW='/etc/sudoers.d/nopw-groups'
-  echo -n D: "Ensure $NOPW: "
-  [ -f "$NOPW" ] || wsl.exe --user root sh \
-    -c 'echo "%sudo   ALL=(ALL:ALL) NOPASSWD: ALL"'" >>$NOPW"
-  echo done.
 }
 
 
