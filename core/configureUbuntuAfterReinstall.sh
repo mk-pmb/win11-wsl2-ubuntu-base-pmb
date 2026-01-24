@@ -56,11 +56,6 @@ function rere_detect_windir () {
 function rere_unpack_as_root () {
   ./core/runParts.sh core/unpack.root 'Unpack root parts' || return $?
 
-  echo D: "Prevent syslog spam from the wsl-pro-service daemon:"
-  # https://github.com/microsoft/WSL/issues/12992
-  systemctl disable wsl-pro.service || return $?
-  systemctl stop wsl-pro.service || return $?
-
   rere_ensure_apt_pkg || return $?
   rere_set_default_locale || return $?
 }
