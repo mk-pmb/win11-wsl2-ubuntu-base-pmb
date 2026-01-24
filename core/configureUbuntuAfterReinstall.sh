@@ -62,14 +62,6 @@ function rere_unpack_as_user () {
   local MNTPATH_PROFILE="$(wslpath -u "$WINPATH_PROFILE")"
   local -p; echo
 
-  echo D: "Install the wub.cmd command:"
-  local WINAPPS="$MNTPATH_PROFILE/AppData/Local/Microsoft/WindowsApps"
-  # Win 10: %USERPROFILE%\AppData\Local\Microsoft\WindowsApps is in PATH
-  ( echo '@echo off'
-    echo '"'"$WINPATH_REPO"'\wub.cmd" %*'
-    echo 'exit /b %ERRORLEVEL%'
-  ) >"$WINAPPS/wub.cmd" || return $?
-
   echo
   ./core/runParts.sh core/unpack.user 'Unpack user parts' || return $?
 
