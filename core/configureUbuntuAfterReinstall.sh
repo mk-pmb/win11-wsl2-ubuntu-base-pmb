@@ -54,7 +54,6 @@ function rere_detect_windir () {
 
 function rere_unpack_as_root () {
   ./core/runParts.sh core/unpack.root 'Unpack root parts' || return $?
-  rere_disable_password_for_user root || return $?
 
   ln --symbolic --force --no-target-directory \
     -- "$REPO_DIR"/wub.sh /usr/local/bin/wub || return $?
@@ -69,15 +68,6 @@ function rere_unpack_as_root () {
 
   rere_ensure_apt_pkg || return $?
   rere_set_default_locale || return $?
-}
-
-
-function rere_disable_password_for_user () {
-  # For why we use a bogus hash instead of locking the account, see chapter
-  # "The problem" in https://github.com/mk-pmb/ansible-bogus-linux-pwhash .
-  local BOGUS_PWHASH='$6$fakesalt$::::::::::::=='
-  BOGUS_PWHASH="${BOGUS_PWHASH//:/==bogus}"
-  sudo usermod --password "$BOGUS_PWHASH" -- "$1"
 }
 
 
@@ -99,7 +89,9 @@ function rere_unpack_as_user () {
   ) >"$WINAPPS/wub.cmd" || return $?
 
   rere_add_default_ssh_authorized_keys || return $?
-  rere_disable_password_for_user "$USER" || return $?
+  echo
+  ./core/runParts.sh core/unpack.user 'Unpack user parts' || return $?
+  echo
   rere_ensure_ncat || return $?
   rere_ensure_keepalive || return $?
 
