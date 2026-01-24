@@ -5,6 +5,7 @@
 function kwa_cli_init () {
   export LANG{,UAGE}=en_US.UTF-8  # make error messages search engine-friendly
   local REPO_DIR="$(readlink -m -- "$BASH_SOURCE"/../..)"
+  local ORIG_CWD="$PWD"
   # cd -- "$REPO_DIR" || return $?
 
   local MNT_WUBU='/mnt/wsl/win11-wsl2-ubuntu-base-pmb'
@@ -15,6 +16,7 @@ function kwa_cli_init () {
 
 
 function kwa_on_startup () {
+  cd /
   kwa_start_basics |& tee -- "$MNT_WUBU/start_basics.latest.log" & disown $!
   local KA_NAME='keep-wsl2-ubuntu-alive'
   local KA_DURA='9009009d'
@@ -31,6 +33,7 @@ function kwa_on_startup () {
 
 
 function kwa_start_basics () {
+  wub core/extractWslSessionEnvVars "$MNT_WUBU"/env.
   wub core/portfwd 513 = 22 & disown $!
 
   echo D: $FUNCNAME: 'Waiting for prep tasks to finish.'
