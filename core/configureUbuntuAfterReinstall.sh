@@ -21,7 +21,7 @@ function rere_post_unpack () {
     echo E: "Flinching: Hostname contains uppercase letter!" >&2)
 
   echo
-  rere_unpack_as_root || return $?
+  ./core/runParts.sh core/unpack.root 'Unpack root parts' || return $?
   local WINPATH_WINDIR=
   rere_detect_windir || return $?
 
@@ -50,11 +50,6 @@ function rere_detect_windir () {
       return 4;;
   esac
   WINPATH_WINDIR="$VAL"
-}
-
-
-function rere_unpack_as_root () {
-  ./core/runParts.sh core/unpack.root 'Unpack root parts' || return $?
 }
 
 
