@@ -27,6 +27,26 @@ Usage
 
 
 
+Port forwarding for the Ubuntu OpenSSH server
+---------------------------------------------
+
+WSL tends to randomize its IP address whenever it starts.
+To alleviate this, WUB by default installs a crude `ncat`-based proxy
+from TCP port 513 ([rlogin](https://en.wikipedia.org/wiki/rlogin))
+to `localhost:22`.
+
+Fortunately, WSL seems to do something to make the latter work
+on the Windows side. I guess Microsoft arranged that because anyone
+connecting from Windows to `localhost:22` usually doesn't mean to
+connect to the Windows OpenSSH service.
+
+Thus, if you allow `ncat.exe` to only listen on trusted local home networks,
+you should have reasonably secure, easy access from your LAN with:
+
+`ssh -p 513 wubu-pmb@yourmachine.local`
+
+
+
 Installation
 ------------
 
