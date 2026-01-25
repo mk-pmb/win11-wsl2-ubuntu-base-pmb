@@ -10,6 +10,7 @@ function wub_cli_init () {
   local DBGLV="${DEBUGLEVEL:-0}"
   case "$1" in
     '' ) set -- pwsh "${@:2}"; cd -- "$REPO_DIR" || return $?;;
+    . ) set -- explorer.exe .; cd -- "$REPO_DIR" || return $?;;
     --show-basedir ) echo "$REPO_DIR"; return 0;;
     [A-Za-z]:'\'*.* ) set -- "$(wslpath -au -- "$1")" "${@:2}";;
     *.exe ) ;;
