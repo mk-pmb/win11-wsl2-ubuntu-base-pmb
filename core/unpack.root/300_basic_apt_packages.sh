@@ -9,6 +9,7 @@ function setup_basic_apt_packages () {
   local LIST=(
     aptitude
     fuse3 # would otherwise be uninstalled when purging snapd.
+    moreutils # for ts
     nano
     openssh-server
     pv
