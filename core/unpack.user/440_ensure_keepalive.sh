@@ -7,4 +7,4 @@ ARGS='core/runHide bash.exe wub core/keepWslAlive on_startup'
 wub filesys/lnkFile prog "$PROG" args "$ARGS" \
   lnkFile '@:\Startup\Start WSL2 Ubuntu.lnk' icon 'pifmgr.dll,32' \
   winStyle min saveLnk
-"$PROG" $ARGS
+</dev/null setsid "$PROG" $ARGS &>/dev/null & disown $!
