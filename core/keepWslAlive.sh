@@ -17,7 +17,8 @@ function kwa_cli_init () {
 
 function kwa_on_startup () {
   cd /
-  kwa_start_basics |& tee -- "$MNT_WUBU/start_basics.latest.log" & disown $!
+  kwa_start_basics |& ts |
+    tee -- "$MNT_WUBU/start_basics.latest.log" & disown $!
   local KA_NAME='keep-wsl2-ubuntu-alive'
   local KA_DURA='9009009d'
   # ^-- Probably sufficient beyond host Windows' End-of-Life.
