@@ -24,6 +24,10 @@ goto end
     cd /d "%~dp0"
     goto end
     )
+  if "%~1"=="." (
+    start /b explorer.exe "%~dp0"
+    goto end
+    )
   if "%~1"=="--show-basedir" (
     echo %~dp0
     goto end
