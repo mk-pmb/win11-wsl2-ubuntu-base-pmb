@@ -56,6 +56,7 @@ function rere_detect_windir () {
 
 
 function rere_unpack_as_user () {
+  exec &> >(tee -- "tmp.${FUNCNAME#*_}.log")
   local RP_TITLE='Unpack user parts'
   ./core/runParts.sh --headline "$RP_TITLE" 'Detected paths:'
   [ "$#" == 0 ] || local "$@"
