@@ -97,6 +97,9 @@ Installation
 * Download [`reinstall_repo.cmd`](reinstall_repo.cmd) into your WUB directory,
   open its file properties, confirm the trust checkbox (web download
   noob protection) in the bottom, click "OK", and run it.
+  * If you want to install from a specific branch,
+    you can give that as a named parameter, e.g.:
+    `reinstall_repo.cmd BRANCH=experimental`
 * It should install lots of stuff and then say
   "Post-install configuration completed successfully."
 * Type any key (e.g. space bar) to quit.
