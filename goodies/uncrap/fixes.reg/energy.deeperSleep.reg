@@ -1,0 +1,6 @@
+REGEDIT4
+
+[HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Power]
+"PlatformAoAcOverride"=dword:00000000
+; ^- 0 = use traditional S3 standby (deeper sleep, less power consumption).
+;   (not present) = use S0 standby for quicker wake-up.

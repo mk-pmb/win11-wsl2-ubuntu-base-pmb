@@ -1,0 +1,9 @@
+REGEDIT4
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced]
+"TaskbarAl"=dword:00000000
+; ^- TaskbarAlAl = alignment, 0 = left
+"TaskbarMn"=dword:00000000
+; ^- Mn = minimize, 0 = never
+"TaskbarSizeMove"=dword:00000000
+; ^- 1 = User can resize the taskbar and move it and its panels, 0 = locked.

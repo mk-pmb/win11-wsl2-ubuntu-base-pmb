@@ -1,0 +1,6 @@
+REGEDIT4
+
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced]
+"DontUsePowerShellOnWinX"=dword:00000000
+; ^- Which shell to use when you press Win+X and select "Terminal".
+;   0 = PowerShell, 1 = cmd.exe.

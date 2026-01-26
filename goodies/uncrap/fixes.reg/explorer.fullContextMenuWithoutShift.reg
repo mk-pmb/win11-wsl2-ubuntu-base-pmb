@@ -1,0 +1,31 @@
+REGEDIT4
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32]
+@=""
+
+; Source: https://web.archive.org/web/2025/https://learn.microsoft.com/en-us/answers/questions/2287432/%28article%29-restore-old-right-click-context-menu-in
+; But: Seems to not work on Windows 11 Home 25H2. [2026-01-26]
+; Note the comment by "Alexander Papas" at 2025-09-03T15:24:23:
+;   "This method of returning the classic context menu has been deprecated
+;   in 24H2. The only way now is to use a third-party app that patches/
+;   injects into explorer.exe"
+
+
+
+; Another comment claims we need to change it in HKLM:
+
+; [HKEY_LOCAL_MACHINE\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32]
+; @=""
+
+; however, I wasn't able to start reg.exe or regedit.exe with sufficient
+; permissions, because "Run as administrator" + UAC confirm seems to still
+; not allow write access to that key.
+
+; Original values:
+;@="C:\\Windows\\SysWOW64\\Windows.UI.FileExplorer.dll"
+;"ThreadingModel"="Apartment"
+
+
+
+
+
