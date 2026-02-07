@@ -88,7 +88,11 @@ Installation
   U+002D hyphen-minus (`-`), U+002E full stop (`.`),
   and/or U+005F low line (`_`).
   * We'll call this your _WUB directory_.
-  * Recommended path: `C:\ProgramData\win11-wsl2-ubuntu-base-pmb`
+  * Recommended path: `C:\ProgramData\wsl\win11-wsl2-ubuntu-base-pmb`
+
+    <!-- 2026-02-07: Whether C:\ProgramData\wsl already exists seems
+      to differ based on how WSL was installed. -->
+
 * In your WUB directory, make a directory named `cfg.@.defaults`
   and maybe put some files there:
   * `ssh_authorized_keys.txt`: If you want to login via OpenSSH.
