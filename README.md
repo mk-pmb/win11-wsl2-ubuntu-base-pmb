@@ -81,6 +81,11 @@ Installation
   you don't have a good reason to keep them. For help on how to delete them:
   `netsh.exe interface portproxy delete` (shows available subcommands)
 * Install the latest Ubuntu LTS from the Windows Store.
+  * ⚠ When the app is installed, it usually starts immediately, but minimized.
+  * If you open the app, and instead of seeing the first time login wizard,
+    you are instantly logged in as root, it's likely because the that
+    first time login wizard is already running in another Ubuntu window,
+    potentially the minimized auto-started one.
   * Recommended initial username: `wubu-pmb` (The second "u" is for user.)
   * Recommended initial password (will be disabled later): `wubu`
 * Create a directory for this repo somewhere on a windows disk where each
