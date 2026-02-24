@@ -7,16 +7,30 @@ function setup_basic_apt_packages () {
 
   echo -n D: 'Check basic apt packages to install: '
   local LIST=(
+    #===== Stuff that we actually need for installing WUB ===== ===== =====
     aptitude
     fuse3 # would otherwise be uninstalled when purging snapd.
     moreutils # for ts
     nano
     openssh-server
-    pv
     screen
     squashfs-tools # would otherwise be uninstalled when purging snapd.
     unzip
     zip
+
+
+    #===== Stuff that will be useful for basic scripts ===== ===== =====
+    gxmessage
+    imagemagick
+    pv
+    rename
+    scrot
+    wmctrl
+    x11-utils
+    xdotool
+    zenity
+
+
     )
   local ITEM= TODO= APT="env debian_frontend='noninteractive' apt"
   for ITEM in "${LIST[@]}"; do
