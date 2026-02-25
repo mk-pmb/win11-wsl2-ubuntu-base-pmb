@@ -12,6 +12,13 @@ function ewgs_cli_main () {
     :choco:Chocolatey.Chocolatey
     :node:OpenJS.NodeJS.LTS     # for npm
 
+    :python:Python.Python.3.13  # for pip
+    # Unfortunately winget has no easy way to find the current stable python
+    # version. With `wub core/winget/searchLatestVersion Python.Python.3.`
+    # we can find the latest version, but that one might be a preview version
+    # which some pip packages may not fully support yet.
+
+
 
     # ===== Less important stuff =====
 
