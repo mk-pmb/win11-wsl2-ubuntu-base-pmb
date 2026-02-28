@@ -18,6 +18,9 @@ function ewgs_cli_main () {
     # we can find the latest version, but that one might be a preview version
     # which some pip packages may not fully support yet.
 
+    :nuget:Microsoft.NuGet
+
+
 
 
     # ===== Less important stuff =====
@@ -73,9 +76,20 @@ function ewgs_each_pkg () {
 }
 
 
+function ewgs_check_pkgmgr_version () {
+  case "$PKG_PROG" in
+    nuget | \
+    __nuget-like__ )
+      cmd.exe /c "$PKG_PROG.exe help" |&
+        sed -nre '5q; s!('"$PKG_PROG"' |)version:\s+!!ip';;
+    * ) cmd.exe /c "$PKG_PROG.exe --version";;
+  esac
+}
+
+
 function ewgs_check_missing__one_pkg () {
   printf -- 'D:   • %s?\t' "$PKG_PROG"
-  local PKG_VER="$(cmd.exe /c "$PKG_PROG.exe --version" |&
+  local PKG_VER="$(ewgs_check_pkgmgr_version |&
     grep -m 1 -Pe '\S' | tr -d '\r')"
   case "$PKG_VER" in
     *[0-9].[0-9]* ) echo "$PKG_VER"; return 0;;
