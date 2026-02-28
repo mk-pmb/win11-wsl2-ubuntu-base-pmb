@@ -18,6 +18,9 @@ function ewgs_cli_main () {
     # we can find the latest version, but that one might be a preview version
     # which some pip packages may not fully support yet.
 
+    :nuget:NuGet.CommandLine
+
+
 
 
     # ===== Less important stuff =====
