@@ -89,6 +89,9 @@ Installation
     potentially the minimized auto-started one.
   * Recommended initial username: `wubu-pmb` (The second "u" is for user.)
   * Recommended initial password (will be disabled later): `wubu`
+    * Don't worry about password strength, because in WSL2, any Ubuntu user
+      inside the guest can run `wsl.exe -u root` anyway, by design.
+      Any actual security fences have to live on the Windows side.
 * Create a directory for this repo somewhere on a windows disk where each
   path component consists of only letters (`A-Z`, `a-z`), digits (`0-9`),
   U+002D hyphen-minus (`-`), U+002E full stop (`.`),
