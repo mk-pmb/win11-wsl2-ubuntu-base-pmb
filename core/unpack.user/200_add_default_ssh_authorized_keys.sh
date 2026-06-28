@@ -4,6 +4,7 @@ set -e
 echo D: 'Ensuring default SSH keys:'
 CFG_AK="$HOME"/.config/ssh
 mkdir --parents -- "$CFG_AK" || true
+rmdir -- "$HOME"/.ssh 2>/dev/null || true
 [ -L "$HOME"/.ssh ] || ln --symbolic --no-target-directory \
   -- .config/ssh "$HOME"/.ssh || exit $?$(
   echo E: 'Failed to create ~/.ssh symlink!' >&2)
