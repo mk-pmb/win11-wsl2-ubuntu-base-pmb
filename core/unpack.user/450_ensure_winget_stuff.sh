@@ -20,6 +20,10 @@ function ewgs_cli_main () {
 
     # :nuget:Microsoft.NuGet
 
+    # :git:Git.Git
+    # 2026-06-29: While the `--scope user` fix made Git installable via SSH,
+    #   it still blocks install on the interactive desktop due to UAC prompt.
+
 
 
 
@@ -127,7 +131,16 @@ function ewgs_check_pkgver () {
 
 
 function ewgs_install_one_pkg () {
-  set -- "$INSTALLER.exe" install $PKG_NAME
+  local OPT=
+  case "$INSTALLER" in
+    winget )
+      OPT+=' --accept-package-agreements'
+      OPT+=' --disable-interactivity'
+      OPT+=' --scope user' # try to avoid UAC prompt
+      OPT+=' --silent'
+      ;;
+  esac
+  set -- "$INSTALLER.exe" install $OPT $PKG_NAME
   echo D: "$PKG_PROG.exe <- $*"
   "$@" || return $?
 }
