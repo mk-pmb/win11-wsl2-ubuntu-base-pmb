@@ -27,6 +27,10 @@ function ewgs_cli_main () {
 
     # We can't easily use choco because it would require UAC. :-(
     # choco:perl:strawberryperl
+
+    # :magick:ImageMagick.ImageMagick
+    # ^-- 2026-06-28: Nope, even the Windows build of IM v16 cannot
+    #     `import` or `screenshot` the host desktop.
     )
   local PKG_MISS=()
   local OUTDATED_PATH=
