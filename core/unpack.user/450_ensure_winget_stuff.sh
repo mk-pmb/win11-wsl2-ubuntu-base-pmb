@@ -9,6 +9,8 @@ function ewgs_cli_main () {
     #   * `installer` defaults to `winget`.
 
     # ===== Important infrastructure first. =====
+    :pwsh:Microsoft.PowerShell  # Upgrade PowerShell to v7+.
+
     :choco:Chocolatey.Chocolatey
     :node:OpenJS.NodeJS.LTS     # for npm
 
