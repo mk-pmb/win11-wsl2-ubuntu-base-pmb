@@ -8,13 +8,17 @@ function dump_wsl_session_env () {
   local SELF_DIR="${SELF_ABS%/*}"
   local DEST_BASE="$1"; shift
   [ -n "$DEST_BASE" ] || DEST_BASE="tmp.$FUNCNAME."
+
+  local JOIN_RC="$DEST_BASE"session.join.rc
+  ( echo '#'
+    echo '#  /!\ prefer: eval "$(wub core/wslSessionEnvVars/merge.sh)"'
+    echo '#' ) >"$JOIN_RC"
   env |
     "$SELF_PRE.noBoring.sed" |
     LANG=C sort --version-sort |
     tee -- "$DEST_BASE"session.raw |
     "$SELF_PRE.knownSession.sed" |
-    wub core/env2sh.sed | sed -nre '/=\S/s~^~export ~p' \
-    >"$DEST_BASE"session.join.rc
+    wub core/env2sh.sed | sed -nre '/=\S/s~^~export ~p' >>"$JOIN_RC"
   echo "${PATH//:/$'\n'}" >"$DEST_BASE"paths.list
 }
 
