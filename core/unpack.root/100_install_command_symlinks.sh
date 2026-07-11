@@ -8,3 +8,4 @@ ln --symbolic --force --no-target-directory \
 ln --symbolic --force --no-target-directory \
   -- "$WUB_REPO_DIR"/core/wubCmdReexecInCmdExe.sh \
   /usr/local/bin/wub.cmd
+ln --symbolic --force --target-directory=/usr/local/lib/ -- "$WUB_REPO_DIR"
