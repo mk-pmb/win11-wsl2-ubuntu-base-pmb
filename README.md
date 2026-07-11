@@ -33,7 +33,7 @@ Port forwarding for the Ubuntu OpenSSH server
 WSL tends to randomize its IP address whenever it starts.
 To alleviate this, WUB by default installs a crude `ncat`-based proxy
 from TCP port 513 ([rlogin](https://en.wikipedia.org/wiki/rlogin))
-to `localhost:22`.
+to `localhost:22` that runs `ncat.exe` on the host side via WSL interop.
 
 Fortunately, WSL seems to do something to make the latter work
 on the Windows side. I guess Microsoft arranged that because anyone
@@ -44,6 +44,17 @@ Thus, if you allow `ncat.exe` to only listen on trusted local home networks,
 you should have reasonably secure, easy access from your LAN with:
 
 `ssh -p 513 wubu-pmb@yourmachine.local`
+
+
+### Why not a netsh port-proxy rule?
+
+Installing the rule, and updating its IP address, both require UAC elevation.
+This would add a progress-blocking interactive step to the installation of WUB,
+and even worse, it would cause annoyance every time Windows (and thus WSL) is
+rebooted and WUB has to update the guest IP. This would mean you would have to
+wait for your Windows computer to start and present the UAC question, before
+you can enjoy your freedom of walking away and SSH-ing into it from anywhere.
+WUB is meant to make your Windows experience *less* annoying.
 
 
 
