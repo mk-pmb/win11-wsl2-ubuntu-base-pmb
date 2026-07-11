@@ -35,7 +35,7 @@ function kwa_on_startup () {
 
 
 function kwa_start_basics () {
-  wub core/extractWslSessionEnvVars "$MNT_WUBU"/env.
+  wub core/wslSessionEnvVars/extract "$MNT_WUBU"/env.
   wub core/portfwd 513 = 22 & disown $!
 
   echo D: $FUNCNAME: 'Waiting for prep tasks to finish.'
