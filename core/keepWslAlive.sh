@@ -35,6 +35,7 @@ function kwa_on_startup () {
 
 
 function kwa_start_basics () {
+  wub core/binfmt/registerOurs.sh
   wub core/wslSessionEnvVars/extract.sh "$MNT_WUBU"/env.
   wub core/portfwd.sh 513 = 22 & disown $!
 
