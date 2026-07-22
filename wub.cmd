@@ -3,6 +3,7 @@
 :: -*- coding: latin-1, tab-width: 2 -*-
 
 : init
+  setlocal
   if "%~9" neq "" (
     echo E: Too many arguments. ^
       The wub.cmd command can only use up to 8 CLI arguments safely. ^
@@ -12,9 +13,15 @@
     )
   set pwsh=powershell.exe -NoLogo -ExecutionPolicy RemoteSigned
   call :find_impl %1 || exit /b %ERRORLEVEL%
-  set ERRORLEVEL=0
-  %impl% %2 %3 %4 %5 %6 %7 %8 %9 || exit /b %ERRORLEVEL%
+  call :cleanup_env %impl% %2 %3 %4 %5 %6 %7 %8 %9 || exit /b %ERRORLEVEL%
   ::  ^-- NB: The %2..%9 are because the `shift` operation doesn't update %*.
+goto end
+
+
+: cleanup_env
+  set impl=
+  set pwsh=
+  %*
 goto end
 
 
