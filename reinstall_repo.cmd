@@ -24,9 +24,17 @@ goto end
 
 export REPO='https://github.com/mk-pmb/win11-wsl2-ubuntu-base-pmb/'
 export BRANCH='master'
+export UNPACK_TASK='post_unpack'
 exec 8<&- 9<&-
 while [ "$#" -ge 1 ]; do case "$1" in
-  ex ) export BRANCH=experimental;;
+  clear ) ./filesys/clearAwayOldGitFiles.sh;;
+  ex ) export BRANCH='experimental';;
+  reex )
+    # Approximate hard-reset to experimental branch
+    export BRANCH='experimental'
+    export UNPACK_TASK='skip'
+    ./filesys/clearAwayOldGitFiles.sh
+    ;;
   * ) export "$1";;
 esac; shift; done
 
@@ -34,7 +42,7 @@ export BALL="$REPO/archive/refs/heads/$BRANCH.tar.gz"
 echo D: "Gonna download and extract: $BALL"
 ( curl --location -- "$BALL" |
   tar --extract --gzip --strip-components=1 --
-) && ./core/configureUbuntuAfterReinstall.sh post_unpack || (
+) && ./core/configureUbuntuAfterReinstall.sh $UNPACK_TASK || (
   echo $'\n'"E: reinstall failed, rv=$?"
   debian_chroot='reinstall' exec bash -i
 )
