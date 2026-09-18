@@ -14,6 +14,11 @@ function rere_cli_init () {
 }
 
 
+function rere_skip () {
+  echo D: post-unpack: skip.
+}
+
+
 function rere_post_unpack () {
   [[ "$HOSTNAME" == [a-z]* ]] || return 4$(
     echo E: "Flinching: Hostname doesn't start with lowercase letter!" >&2)
