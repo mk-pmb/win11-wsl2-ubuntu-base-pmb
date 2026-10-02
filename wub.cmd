@@ -58,6 +58,7 @@ exit /b 4
 
 
 : find_impl__nofext
+  if defined impl goto end
   call :find_impl__eachfext "%~dp0%~1"
   for %%e in ( ps1 sh cmd ) do call :find_impl__eachfext "%~dp0%~1.%%e"
 goto end
@@ -68,6 +69,11 @@ goto end
   set impl=%1
   if "%~x1"==".ps1" set impl=%pwsh% -File %impl%
   if "%~x1"==".sh" set impl=wsl.exe wub %impl%
+
+  :: For batch we need "call" in order to make a new label namespace.
+  :: Otherwise, the labels we define in this dispatcher may interfere
+  :: with labels defined in the implementation.
+  if "%~x1"==".cmd" set impl=call %impl%
 goto end
 
 
