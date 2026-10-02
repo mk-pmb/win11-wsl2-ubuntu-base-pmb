@@ -11,6 +11,7 @@
       Your 9th argument is: %9
     exit /b 4
     )
+  set impl=
   set pwsh=powershell.exe -NoLogo -ExecutionPolicy RemoteSigned
   call :find_impl %1 || exit /b %ERRORLEVEL%
   call :cleanup_env %impl% %2 %3 %4 %5 %6 %7 %8 %9 || exit /b %ERRORLEVEL%
@@ -34,6 +35,7 @@ goto end
     )
   if "%~1"=="." (
     start /b explorer.exe "%~dp0"
+    set impl=rem
     goto end
     )
   if "%~1"=="--show-basedir" (
