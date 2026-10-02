@@ -6,7 +6,7 @@
   setlocal
   if "%~9" neq "" (
     echo E: Too many arguments. ^
-      The wub.cmd command can only use up to 8 CLI arguments safely. ^
+      The %~nx0 command can only use up to 8 CLI arguments safely. ^
       In some situations you can instead use "wsl.exe wub". ^
       Your 9th argument is: %9
     exit /b 4
@@ -32,6 +32,10 @@ goto end
 
 
 : find_impl
+  if "%~1"=="/hide" (
+    set impl="%~dp0core\runHide.cmd" %~nx0
+    goto end
+    )
   set impl=%1
   if not defined impl (
     set impl=%pwsh%

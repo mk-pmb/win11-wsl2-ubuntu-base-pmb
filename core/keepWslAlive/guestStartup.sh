@@ -4,7 +4,7 @@
 
 function kwa_cli_init () {
   export LANG{,UAGE}=en_US.UTF-8  # make error messages search engine-friendly
-  local REPO_DIR="$(readlink -m -- "$BASH_SOURCE"/../..)"
+  local REPO_DIR="$(readlink -m -- "$BASH_SOURCE"/../../..)"
   local REPO_DBN="${REPO_DIR##*/}"
   local ORIG_CWD="$PWD"
   # cd -- "$REPO_DIR" || return $?
