@@ -21,7 +21,12 @@ goto end
 : cleanup_env
   set impl=
   set pwsh=
-  %*
+  :: For batch scripts, we need `call` in order to make a new label namespace.
+  :: Otherwise, the labels we define in this dispatcher may interfere with
+  :: labels defined in the implementation. Selectively adding the `call` to
+  :: `impl` would be prone to mistake, and we can `call` anything else as well,
+  :: so we just always use `call`.
+  call %*
 goto end
 
 
@@ -58,6 +63,7 @@ exit /b 4
 
 
 : find_impl__nofext
+  if defined impl goto end
   call :find_impl__eachfext "%~dp0%~1"
   for %%e in ( ps1 sh cmd ) do call :find_impl__eachfext "%~dp0%~1.%%e"
 goto end
