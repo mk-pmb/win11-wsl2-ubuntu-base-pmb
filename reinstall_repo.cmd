@@ -9,16 +9,18 @@ if not exist .@local\var\lock\ mkdir .@local\var\lock
     "eval $(grep -Fe REPO'=' -A 9009 -- %~nx0 | tr -d '\r')" ^
     -- %* && goto success & goto failed
 ) 8>.@local\var\lock\wub-instable.lock 9>.@local\var\lock\wub-reinstall.lock
-echo Failed to obtain lockfile(s).>&2
+echo.
+echo H: Consider: wsl.exe --shutdown
+echo E: Failed to obtain lockfile(s) on %COMPUTERNAME%.>&2
 goto failed
 
 :failed
-echo Reinstall failed.>&2
+echo Reinstall failed on %COMPUTERNAME%.>&2
 timeout /t 180
 goto end
 
 :success
-echo Reinstall succeeded.
+echo Reinstall succeeded on %COMPUTERNAME%.
 timeout /t 30
 goto end
 
@@ -47,11 +49,11 @@ while [ "$#" -ge 1 ]; do
 done
 
 export BALL="$REPO/archive/refs/heads/$BRANCH.tar.gz"
-echo D: "Gonna download and extract: $BALL"
+echo D: "Gonna download and extract onto $HOSTNAME: $BALL"
 ( curl --location -- "$BALL" |
   tar --extract --gzip --strip-components=1 --
 ) && ./core/configureUbuntuAfterReinstall.sh $UNPACK_TASK || (
-  echo $'\n'"E: reinstall failed, rv=$?"
+  echo $'\n'"E: Reinstall failed on $HOSTNAME, rv=$?"
   debian_chroot='reinstall' exec bash -i
 )
 
