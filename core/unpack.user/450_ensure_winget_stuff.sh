@@ -4,6 +4,12 @@
 
 function ewgs_cli_main () {
   export LANG{,UAGE}=en_US.UTF-8  # make error messages search engine-friendly
+  local LOCAL_APP_DATA_DIR_WIN="$(
+    cmd.exe /c 'echo %LocalAppData%' | tr -d '\r')"
+  local LOCAL_APP_DATA_DIR_WSL="$(wslpath -u "$LOCAL_APP_DATA_DIR_WIN")"
+  [ -d "$LOCAL_APP_DATA_DIR_WSL" ] || return 4$(
+    echo E: 'Failed to detect LOCAL_APP_DATA_DIR_WSL.' >&2)
+
   local PKG_WANT=(
     # item format: `<installer>:<exe_name>:<package_name>`
     #   * `installer` defaults to `winget`.
@@ -38,9 +44,15 @@ function ewgs_cli_main () {
     # ^-- 2026-06-28: Nope, even the Windows build of IM v16 cannot
     #     `import` or `screenshot` the host desktop.
     )
+
+  ewgs_add_sysinternal_tools || return $?
+
   local PKG_MISS=()
   local OUTDATED_PATH=
   STRICTNESS=W ewgs_check_missing || true
+
+  ewgs_add_sysinternal_tools --again || return $?
+
   PKG_WANT=( "${PKG_MISS[@]}" )
   [ "${#PKG_WANT[@]}" -ge 1 ] || [ -n "$OUTDATED_PATH" ] || return 0
   ewgs_each_pkg ewgs_install_one_pkg || return $?
@@ -100,6 +112,7 @@ function ewgs_check_pkgmgr_version () {
 function ewgs_check_missing__one_pkg () {
   printf -- 'D:   • %s?\t' "$PKG_PROG"
   local PKG_VER="$(ewgs_check_pkgmgr_version |&
+    tr -d '\0' | # <- for pslist.exe from SysInternals
     grep -m 1 -Pe '\S' | tr -d '\r')"
   case "$PKG_VER" in
     *[0-9].[0-9]* ) echo "$PKG_VER"; return 0;;
@@ -144,6 +157,49 @@ function ewgs_install_one_pkg () {
   set -- "$INSTALLER.exe" install $OPT $PKG_NAME
   echo D: "$PKG_PROG.exe <- $*"
   "$@" || return $?
+}
+
+
+function ewgs_add_sysinternal_tools () {
+  local TRACE='SysInternals tools:'
+  case "$1" in
+    --again )
+      echo D: $TRACE Checking again because new tools may have been installed.
+      shift;;
+  esac
+
+  local VAL='
+    Handle
+    PsTools:pslist
+    '
+  local EXE= ALL_EXES=
+  for VAL in $VAL; do
+    EXE="${VAL##*:}"
+    VAL="${VAL%:*}"
+    EXE="${EXE,,}"
+    ALL_EXES+="$EXE"
+    VAL=":$EXE:Microsoft.Sysinternals.$VAL"
+    [[ " ${PKG_WANT[*]} " == *" $VAL "* ]] || PKG_WANT+=( "$VAL" )
+  done
+
+  echo D: $TRACE 'Find their *.exe names: …'
+  ALL_EXES="$( (
+    printf -- '%s\n' $ALL_EXES
+    printf -- '%s\n' "$LOCAL_APP_DATA_DIR_WSL"/Microsoft/WinGet/Packages/$(
+      )Microsoft.Sysinternals.*_Microsoft.Winget.*/*.exe |&
+      tr A-Z a-z | LANG=C grep -oPe '/[a-z]+(?=\.exe$)' | tr -d /
+    ) | sort --version-sort --unique )"
+  echo -n D: $TRACE 'Set all their EULA agreement flags to accepted: '
+  local MSG=
+  for EXE in $ALL_EXES; do
+    echo -n "$EXE: "
+    set -- reg.exe add 'HKCU\Software\Sysinternals\'"$EXE" \
+      /v EulaAccepted /t REG_DWORD /d 1 /f
+    MSG="$("$@" |& tr -d '\r')" ||
+      return $?$(echo E: "failed (rv=$?): $*: $MSG" >&2)
+    echo -ne '\b\b, '
+  done
+  echo done.
 }
 
 

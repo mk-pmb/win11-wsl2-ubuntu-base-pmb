@@ -74,6 +74,11 @@ Installation
   * `node.exe` = Node.js
   * `perl.exe` = Perl
   * `pythonw3.exe` = Python 3
+* The WUB installer is optimized for convenience, so it will try its best to
+  confirm any EULA agreement questions that auto-installed third-party
+  software might try to bother you with.
+  * ⚠ Review the WUB repo to determine what licenses those are and whether
+    you really want to have them accepted on your behalf.
 * Plan ahead for restarting Windows soon, as that will be required later,
   after WUB claims it is successfully installed.
 * Ensure your computer name is sane, and entirely lowercase.
