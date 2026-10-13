@@ -5,7 +5,8 @@ cd /d "%~dp0" || ( echo Failed to chdir!>&2& goto failed )
 
 :: For explanation of the lock files, see `core/keepWslAlive/lockfiles.md`.
 if not exist .@local\var\lock\ mkdir .@local\var\lock
-( wsl.exe --shutdown && wsl.exe --user root bash -c ^
+( echo Locks obtained. Shutting down any remaining WSL to avoid interference.
+  wsl.exe --shutdown && wsl.exe --user root bash -c ^
     "eval $(grep -Fe REPO'=' -A 9009 -- %~nx0 | tr -d '\r')" ^
     -- %* && goto success & goto failed
 ) 8>.@local\var\lock\wub-instable.lock 9>.@local\var\lock\wub-reinstall.lock
@@ -24,27 +25,35 @@ echo Reinstall succeeded on %COMPUTERNAME%.
 timeout /t 30
 goto end
 
+set -o errexit -o pipefail
 export REPO='https://github.com/mk-pmb/win11-wsl2-ubuntu-base-pmb/'
 export BRANCH='master'
 export UNPACK_TASK='post_unpack'
 exec 8<&- 9<&-
 while [ "$#" -ge 1 ]; do
-  VAL="$1"; shift
-  case "$VAL" in
+  ARG="$1"; shift
+  case "$ARG" in
     reex )
       # Approximate hard-reset to experimental branch
       export BRANCH='experimental'
       export UNPACK_TASK='skip'
-      VAL=clear;;
+      ARG=clear;;
   esac
-  case "$VAL" in
+  case "$ARG" in
     clear )
-      VAL='clearAwayOldGitFiles'
-      echo D: $VAL:
-      ./filesys/$VAL.sh;;
+      ARG='clearAwayOldGitFiles'
+      echo D: $ARG:
+      RV=0
+      VAL="$(cat -- ./filesys/$ARG.sh)" || true
+      # ^-- Read to memory so Windows has no excuse to deny access due to
+      #     open file handles.
+      echo "$VAL" | bash && VAL=0 || VAL=$?
+      echo D: $ARG: rv=$VAL
+      [ "$VAL" == 0 ] || exit $VAL
+      ;;
     ex ) export BRANCH='experimental';;
-    [A-Z]*=* ) export "$VAL";;
-    * ) echo E: "Unsupported argument: $VAL" >&2; exit 4;;
+    [A-Z]*=* ) export "$ARG";;
+    * ) echo E: "Unsupported argument: $ARG" >&2; exit 4;;
   esac
 done
 
